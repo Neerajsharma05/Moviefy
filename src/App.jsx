@@ -12,6 +12,9 @@ import EmotionRecommend from './Pages/EmotionRecommend'
 import Home from './Pages/Home'
 import PopularMovies from './Pages/PopularMovies'
 import TopRatedMovies from './Pages/Toprated'
+import AboutPage from './Pages/AboutPage'
+import ProfilePage from './Pages/ProfilePage'
+import AuthPage from './Pages/AuthPage'
 const App = () => {
   return (
     <div className='w-full h-auto relative'>
@@ -25,6 +28,9 @@ const App = () => {
         <Route path='/emotionRecommend' element={<EmotionRecommend/>}/>
         <Route path='/popularMovies' element={<PopularMovies/>}/>
         <Route path='/topRatedMovies' element={<TopRatedMovies/>}/>
+        <Route path='/about' element={<AboutPage/>}/>
+        <Route path='/profile' element={<ProfilePage/>}/>
+        <Route path='/login' element={<AuthPage/>}/>
       </Routes>
       
 

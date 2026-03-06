@@ -1,186 +1,244 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { IoClose } from "react-icons/io5";
-import { AiOutlineMenu } from "react-icons/ai";
-import { CiSearch } from "react-icons/ci";
+import React, { useEffect, useState, useRef } from "react"; // Added useRef
+import { IoSearchOutline, IoCloseOutline, IoLogOutOutline, IoSettingsOutline, IoHeartOutline } from "react-icons/io5"; // Added icons
+import { HiOutlineMenuAlt4 } from "react-icons/hi";
+import { FaStar, FaUserCircle } from "react-icons/fa"; // Added FaUserCircle
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { fetchSearchSection } from "../Services/Api";
-import { FaStar } from "react-icons/fa";
-import ShowDetails from "./MovieDetail/ShowDetails";
-import EmotionRecommend from "../Pages/EmotionRecommend";
-import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
-const NavBar = ({ className }) => {
-  const [input, setinput] = useState("");
-  const [isMobile, setisMobile] = useState(false);
+const NavBar = () => {
+  const [input, setInput] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // New state
   const [suggestions, setSuggestions] = useState([]);
-  const [Ddata, setDdata] = React.useState([]);
-  const [ShowDetailToggel, setShowDetailToggel] = React.useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const profileRef = useRef(null); // To detect clicks outside
 
-  const inputchange = (e) => {
-    setinput(e.target.value);
+  // Dummy user data - replace with your Auth context
+  const user = {
+    name: "Neeraj Sharma",
+    email: "neeraj@dev.com",
+    avatar: null // if null, shows initials
   };
 
-  const SearchSection = async () => {
-    if (input.length < 2) {
-      setSuggestions([]);
-      return;
-    }
-    try {
-      const res = await fetchSearchSection(input);
-      setSuggestions(res.data.results.slice(0, 4));
-      console.log(suggestions);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   useEffect(() => {
-    SearchSection();
+    const handleScroll = () => setScrolled(window.scrollY > 40);
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) setIsProfileOpen(false);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (input.length >= 2) {
+        fetchSearchSection(input).then(res => setSuggestions(res.data.results.slice(0, 5)));
+      } else {
+        setSuggestions([]);
+      }
+    }, 300);
+    return () => clearTimeout(delayDebounceFn);
   }, [input]);
 
-  const handlesubmit = async (e) => {
-    e.preventDefault();
-    console.log("clikked");
-  };
+  const navigate = useNavigate()
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Popular", path: "/popularMovies" },
+    { name: "Vibe AI", path: "/emotionRecommend" },
+    { name: "Top Rated", path: "/topRatedMovies" },
+    { name: "About", path: "/about" },
+  ];
 
-1  // console.log(Ddata)
   return (
     <>
-      <div className={`absolute top-0 right-0 left-0 ${className}`}>
-        {/* menubar  */}
-        {isMobile && (
-          <div className=" w-1/2 h-screen absolute top-0 right-0 z-10 backdrop:blur-lg  bg-neutral-600 px-3 duration-[600ms]  " style={{
-            right : isMobile ? '0' : "-100%"
-          }}>
-            <div className="flex items-center justify-between px-3 mt-5">
-              <h1 className="text-2xl font-bold text-white">
-                Movie<span className="text-[#9237BA]">fy</span>
-              </h1>
-              {/* close btn for dropdown  */}
-              <IoClose
-                onClick={() => setisMobile(false)}
-                className="text-2xl text-white hover:text-[#9237BA] cursor-pointer ease-in-out duration-500"
-              />
+      <nav 
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+          scrolled 
+            ? "py-4 bg-black/60 backdrop-blur-2xl border-b border-white/[0.03] shadow-[0_10px_40px_rgba(0,0,0,0.4)]" 
+            : "py-8 bg-transparent"
+        }`}
+      >
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between">
+          
+          {/* --- BRANDING --- */}
+          <Link to="/" className="group flex items-center gap-2">
+            <div className="w-8 h-8 bg-purple-600 rounded-lg rotate-12 group-hover:rotate-0 transition-transform duration-500 flex items-center justify-center font-black text-black">
+              M
             </div>
-            <div className=" mt-3">
-              <div className="mt-5 w-full  border-b-1 border-gray-100">
-                <h1 className="text-xl text-white  "><Link to="/">Home</Link> </h1>
-              </div>
-                <div className="mt-5 w-full  border-b-1 border-gray-100">
-                <h1 className="text-xl text-white  "><Link to="/popularMovies">PopularMovies</Link> </h1>
-              </div>
-              <div className="mt-5 w-full  border-b-1 border-gray-100">
-                <h1 className="text-xl text-white  "><Link to="/emotionRecommend">EmotionRecommend</Link> </h1>
-              </div>
-              <div className="mt-5 w-full  border-b-1 border-gray-100">
-                <h1 className="text-xl text-white  "><Link to="/topRatedMovies">TopRatedMovies</Link> </h1>
-              </div>
-           
-            </div>
-          </div>
-        )}
+            <h1 className="text-xl font-black tracking-tighter text-white uppercase italic">
+              Movie<span className="text-purple-600">fy</span>
+            </h1>
+          </Link>
 
-        {/* desctop  */}
-        <div className="flex items-center justify-between gap-10 max-sm:gap-2 text-black backdrop-blur-[4px]  px-30 py-4 max-lg:justify-center max-sm:px-5  max-sm:flex-nowrap max-sm:justify-between max-sm:flex-col ">
-          <div className="flex items-center justify-between max-sm:w-full">
-            {isMobile || (
-              <h1 className="text-4xl font-bold text-white ">
-                Movie<span className="text-[#9237BA]">fy</span>
-              </h1>
-            )}
-            {/* Menu icon */}
-            {isMobile || (
-              <AiOutlineMenu
-                onClick={() => setisMobile(true)}
-                className="text-2xl text-white hidden  max-sm:inline-block cursor-pointer hover:text-[#9237BA] ease-in-out duration-200 "
-              />
-            )}
-          </div>
-          <div className="flex gap-10 max-sm:gap-5 text-sm max-sm:hidden">
-            <h1 className="hover:text-[#9237BA] font-semibold text-white  duration-200 ease-in">
-              <Link to='/'>Home</Link>
-            </h1>
-             <h1 className="hover:text-[#9237BA] font-semibold text-white  duration-200 ease-in">
-               <Link to='/popularMovies'>PopularMovies</Link>
-            </h1>
-            
-            <h1 className="hover:text-[#9237BA] font-semibold text-white  duration-200 ease-in">
-               <Link to='/emotionRecommend'>EmotionRecommend</Link>
-            </h1>
-           
-            <h1 className="hover:text-[#9237BA] font-semibold text-white  duration-200 ease-in">
-               <Link to='/topRatedMovies'>TopRatedMovies</Link>
-            </h1>
-           
-            
+          {/* --- CENTRAL NAV (Desktop) --- */}
+          <div className="hidden lg:flex items-center bg-white/[0.03] border border-white/[0.05] rounded-full px-2 py-1 backdrop-blur-md">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 rounded-full ${
+                  location.pathname === link.path 
+                    ? "bg-purple-600 text-white shadow-lg" 
+                    : "text-neutral-400 hover:text-white"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
           </div>
 
-
-            {/*   Search bar for movies  */}
-          <div className="">
-            <form
-              onSubmit={handlesubmit}
-              className="flex items-center justify-center gap-2"
-            >
+          {/* --- SEARCH & PROFILE --- */}
+          <div className="flex items-center gap-4 md:gap-8">
+            <div className="relative group hidden sm:block">
               <input
                 value={input}
-                onChange={(e) => inputchange(e)}
-                className="border-2 border-gray-400 px-4 py-2 rounded-2xl relative text-white"
-                type="search"
-                placeholder="Search Movies..."
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Quick Find..."
+                className={`bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-2.5 text-[11px] text-white outline-none transition-all duration-500 w-[150px] focus:w-[220px] focus:border-purple-500/50 focus:bg-white/[0.07]`}
               />
-              <CiSearch className="text-2xl text-white font-extrabold " />
-            </form>
-          </div>
-
-            {/* suugestion of mivies list  */}
-          {suggestions.length > 2 && (
-            <div className="absolute top-[100px]  right-20  p-4 rounded-md  max-sm:right-2.5">
-              {suggestions.map((movie) => {
-                return (
-                  <ul
-                    key={movie.id}
-                    className="mb-2"
-                    onClick={() => {setShowDetailToggel(true)
-                      setDdata(movie)
-                    }}
-                  >
-                    <li className="  px-2 py-2 bg-neural-800 rounded-lg bg-black/50 backdrop-blur-[4px] cursor-pointer ">
-                      <div className="flex gap-4 w-[260px]">
-                        <div>
-                          <img
-                            className="w-[80px] h-[90px] object-cover rounded-md"
-                            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                            alt=""
-                          />
-                        </div>
-                        <div>
-                          <h4 className="text-white font-bold">
-                            {movie.original_title}
-                          </h4>
-                          <p className="text-sm mt-1 text-gray-200">
-                            {movie.release_date.slice(0, 4)}
-                          </p>
-                          <p>
-                            {" "}
-                            <FaStar className="inline items-center mb-1 text-amber-400" />
-                            <span className="text-gray-200 text-sm">
-                              {" "}
-                              {movie.vote_average.toFixed(1)}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                );
-              })}
+              <IoSearchOutline className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-purple-500 transition-colors" />
             </div>
-          )}
+
+            {/* --- USER PROFILE SECTION --- */}
+            <div className="relative" ref={profileRef}>
+              <button 
+                onClick={() =>{
+                  // setIsProfileOpen(!isProfileOpen)
+                  navigate('/login')
+                } }
+                className="w-10 h-10 rounded-full border border-white/10 p-0.5 hover:border-purple-500 transition-all duration-500 active:scale-90 overflow-hidden"
+              >
+                {user.avatar ? (
+                  <img src={user.avatar} className="w-full h-full rounded-full object-cover" alt="user" />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-600 to-purple-900 flex items-center justify-center text-[10px] font-black text-white">
+                    LG
+                  </div>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {isProfileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                    className="absolute top-[120%] right-0 w-[260px] bg-[#0A0A0A]/95 backdrop-blur-3xl border border-white/[0.08] rounded-[2rem] p-5 shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden"
+                  >
+                    {/* User Info Header */}
+                    <div className="mb-6 px-2">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1">Authenticated</p>
+                      <h3 className="text-white font-black text-lg leading-none">{user.name}</h3>
+                      <p className="text-neutral-500 text-[10px] mt-1">{user.email}</p>
+                    </div>
+
+                    <div className="h-px bg-white/5 w-full mb-4" />
+
+                    {/* Menu Links */}
+                    <div className="space-y-1">
+                      <ProfileLink icon={<FaUserCircle size={16}/>} label="My Profile" />
+                      <ProfileLink icon={<IoHeartOutline size={16}/>} label="Watchlist" />
+                      <ProfileLink icon={<IoSettingsOutline size={16}/>} label="Settings" />
+                      <div className="pt-2">
+                         <button className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-500 hover:bg-red-500/10 transition-all group font-black text-[10px] uppercase tracking-widest">
+                           <IoLogOutOutline size={18} className="group-hover:translate-x-1 transition-transform"/>
+                           Sign Out
+                         </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <button 
+              onClick={() => setIsMobile(true)}
+              className="lg:hidden text-white hover:text-purple-500 transition-colors"
+            >
+              <HiOutlineMenuAlt4 size={28} />
+            </button>
+          </div>
         </div>
-      </div>
-      {ShowDetailToggel && <ShowDetails movie={Ddata} />}
+
+        {/* --- LUXURY SEARCH DROPDOWN --- */}
+        <AnimatePresence>
+          {suggestions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.98 }}
+              className="absolute top-full right-4 md:right-12 mt-4 w-[340px] bg-[#0A0A0A]/95 backdrop-blur-3xl border border-white/[0.08] rounded-[2.5rem] p-4 shadow-[0_30px_100px_rgba(0,0,0,0.8)]"
+            >
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-600 mb-4 px-4">Top Results</div>
+              <div className="space-y-2">
+                {suggestions.map((movie) => (
+                  <div key={movie.id} className="flex gap-4 p-2 hover:bg-white/[0.03] rounded-[1.5rem] cursor-pointer transition-all border border-transparent hover:border-white/[0.05]">
+                    <img src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} className="w-14 h-20 object-cover rounded-2xl shadow-xl" alt="" />
+                    <div className="flex flex-col justify-center">
+                      <h4 className="text-[13px] font-bold text-white line-clamp-1">{movie.original_title}</h4>
+                      <div className="flex items-center gap-3 mt-1.5">
+                        <span className="text-[9px] px-2 py-0.5 bg-white/5 rounded text-neutral-400 font-black">{movie.release_date?.slice(0, 4)}</span>
+                        <span className="text-[9px] flex items-center gap-1 text-amber-500 font-black"><FaStar size={10} /> {movie.vote_average.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+
+      {/* --- MOBILE OVERLAY (unchanged logic) --- */}
+      <AnimatePresence>
+        {isMobile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-12"
+          >
+            <button onClick={() => setIsMobile(false)} className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors">
+              <IoCloseOutline size={40} />
+            </button>
+            <div className="flex flex-col gap-8 text-center">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  key={link.path}
+                >
+                  <Link 
+                    to={link.path} 
+                    onClick={() => setIsMobile(false)} 
+                    className={`text-4xl font-black uppercase tracking-widest ${location.pathname === link.path ? "text-purple-500" : "text-white"}`}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
+
+// Reusable Menu Item Component
+const ProfileLink = ({ icon, label }) => (
+  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-neutral-400 hover:text-white hover:bg-white/5 transition-all group font-black text-[10px] uppercase tracking-widest">
+    <span className="text-purple-500 group-hover:scale-110 transition-transform">{icon}</span>
+    {label}
+  </button>
+);
 
 export default NavBar;

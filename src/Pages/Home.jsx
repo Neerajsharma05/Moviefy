@@ -3,6 +3,7 @@ import HeroSection from '../Components/HeroSection'
 import TrendingSection from '../Components/Sections/TrendingSection'
 import PopularSection from '../Components/Sections/PopularSection'
 import CategorieSection from '../Components/Sections/CategorieSection'
+import AboutSection from '../Components/Sections/AboutSection'
 
 const Home = () => {
   return (
@@ -11,6 +12,7 @@ const Home = () => {
         <TrendingSection />
         <PopularSection />
         <CategorieSection />
+        <AboutSection />
         
     </div>
   )

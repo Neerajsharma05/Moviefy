@@ -3,6 +3,7 @@ import { api } from "../Services/axiosConfig";
 import CardUi from "../Components/CardUi";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPlay, FiTrendingUp, FiPlus, FiLoader } from "react-icons/fi";
+import AboutSection from "../Components/Sections/AboutSection";
 
 const API_KEY = "c4e2efe2860f78e8a430feb5656c6c76";
 
@@ -183,6 +184,8 @@ const PopularMovies = () => {
           </div>
         )}
       </main>
+        <AboutSection />
+
     </div>
   );
 };

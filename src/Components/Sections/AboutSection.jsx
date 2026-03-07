@@ -87,10 +87,14 @@ const AboutSection = () => {
               </p>
 
               <div className="pt-6 flex items-center gap-6">
-                 <button className="text-[10px] font-black uppercase tracking-widest text-white border-b-2 border-purple-600 pb-1 hover:text-purple-500 transition-colors">
+                 <button onClick={(e)=>{
+                    window.location.href ='https://github.com/Neerajsharma05'
+                 }} className="text-[10px] font-black uppercase tracking-widest cursor-pointer text-white border-b-2 border-purple-600 pb-1 hover:text-purple-500 transition-colors">
                     GitHub
                  </button>
-                 <button className="text-[10px] font-black uppercase tracking-widest text-white border-b-2 border-purple-600 pb-1 hover:text-purple-500 transition-colors">
+                 <button onClick={(e)=>{
+                    window.location.href ='https://www.linkedin.com/in/neeraj-sharma05/' 
+                 }}  className="text-[10px] font-black uppercase tracking-widest cursor-pointer text-white border-b-2 border-purple-600 pb-1 hover:text-purple-500 transition-colors">
                     LinkedIn
                  </button>
               </div>

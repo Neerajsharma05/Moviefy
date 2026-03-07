@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaTwitter, FaCode, FaPalette, FaBolt } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaTwitter, FaCode, FaPalette, FaBolt, FaInstagram } from 'react-icons/fa';
 
 const AboutPage = () => {
   const stats = [
@@ -88,9 +88,9 @@ const AboutPage = () => {
             
             {/* Socials */}
             <div className="flex gap-6">
-              <a href="#" className="p-4 rounded-2xl bg-white/5 hover:bg-purple-600 transition-all text-white"><FaGithub size={20} /></a>
-              <a href="#" className="p-4 rounded-2xl bg-white/5 hover:bg-purple-600 transition-all text-white"><FaLinkedin size={20} /></a>
-              <a href="#" className="p-4 rounded-2xl bg-white/5 hover:bg-purple-600 transition-all text-white"><FaTwitter size={20} /></a>
+              <a href="https://github.com/Neerajsharma05" className="p-4 rounded-2xl bg-white/5 hover:bg-purple-600 transition-all text-white"><FaGithub size={20} /></a>
+              <a href="https://www.linkedin.com/in/neeraj-sharma05/" className="p-4 rounded-2xl bg-white/5 hover:bg-purple-600 transition-all text-white"><FaLinkedin size={20} /></a>
+              <a href="https://www.instagram.com/neeraj_sharma05/?__pwa=1" className="p-4 rounded-2xl bg-white/5 hover:bg-purple-600 transition-all text-white"><FaInstagram size={20} /></a>
             </div>
           </div>
         </div>
